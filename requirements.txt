@@ -1,6 +1,6 @@
 Plaintext
 streamlit
 requests
-pyephem
+suncalc
 pandas
 plotly
