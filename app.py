@@ -1,6 +1,5 @@
 import datetime
 import math
-import ephem
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -8,12 +7,18 @@ import requests
 import streamlit as st
 
 
-# --- 月齢計算関数 ---
+# --- 月齢計算関数（標準計算方式） ---
 def get_moon_phase(date_obj):
-    d = ephem.Date(date_obj)
-    prev_new_moon = ephem.previous_new_moon(d)
-    age = d - prev_new_moon
-    phase_num = int((age / 29.530588) * 8) % 8 + 1
+    # 基準となる新月（2000年1月6日18:14 UTC）からの経過日数で簡易計算
+    import datetime
+    if isinstance(date_obj, datetime.date) and not isinstance(date_obj, datetime.datetime):
+        date_obj = datetime.datetime.combine(date_obj, datetime.time(12, 0))
+    
+    ref_date = datetime.datetime(2000, 1, 6, 18, 14)
+    diff = (date_obj - ref_date).total_seconds() / 86400.0
+    synodic_month = 29.53058882
+    age = diff % synodic_month
+    phase_num = int((age / synodic_month) * 8) % 8 + 1
     return f"{phase_num}/8", float(age)
 
 
